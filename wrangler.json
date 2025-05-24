@@ -10,5 +10,11 @@
   "upload_source_maps": true,
   "assets": {
     "not_found_handling": "single-page-application"
-  }
+  },
+  "routes": [
+    {
+      "pattern": "nba-draft-tracker/*",
+      "zone_name": "jasonbland.dev"
+    }
+  ]
 }
