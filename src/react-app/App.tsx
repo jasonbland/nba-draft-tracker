@@ -1,10 +1,10 @@
 // src/App.tsx
 
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import cloudflareLogo from "./assets/Cloudflare_Logo.svg";
-import honoLogo from "./assets/hono.svg";
+// import reactLogo from "./assets/react.svg";
+// import viteLogo from "/vite.svg";
+// import cloudflareLogo from "./assets/Cloudflare_Logo.svg";
+// import honoLogo from "./assets/hono.svg";
 import "./App.css";
 
 function App() {
@@ -13,7 +13,7 @@ function App() {
 
   return (
     <>
-      <div>
+      {/* <div>
         <a href="https://vite.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
@@ -30,8 +30,8 @@ function App() {
             alt="Cloudflare logo"
           />
         </a>
-      </div>
-      <h1>Vite + React + Hono + Cloudflare</h1>
+      </div> */}
+      <h1>NBA Draft Tracker</h1>
       <div className="card">
         <button
           onClick={() => setCount((count) => count + 1)}
