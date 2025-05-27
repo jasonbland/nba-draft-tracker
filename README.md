@@ -18,6 +18,12 @@ Start the development server with:
 npm run dev
 ```
 
+Run Jest tests:
+
+```bash
+npm run test
+```
+
 Your application will be available at [http://localhost:5173](http://localhost:5173).
 
 ## Production
