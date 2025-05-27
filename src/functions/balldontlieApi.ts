@@ -12,8 +12,10 @@ export async function getNBATeams(): Promise<NBATeam[]> {
   // TODO: Add option to filter out inactive teams.
   try {
     const teams = await api.nba.getTeams();
+    // TODO: Possibly cache team names/id's into locale storage to reduce requests.
     return teams.data;
   } catch (error) {
+    // TODO: Possibly log to observability platform like Splunk.
     console.error(error);
     return [];
   }
@@ -35,6 +37,7 @@ export async function getNBAPlayers({
     const players = await api.nba.getPlayers({ team_ids: [teamId] });
     return players.data;
   } catch (error) {
+    // TODO: Possibly log to observability platform like Splunk.
     console.error(error);
     return [];
   }
@@ -44,7 +47,7 @@ export type RoundCounts = {
   [key: number]: number;
 };
 
-type TeamPlayers = {
+type TeamPlayersParams = {
   teamPlayers: NBAPlayer[];
 };
 
@@ -55,7 +58,7 @@ type TeamPlayers = {
  */
 export function getRoundCountForSelectedTeam({
   teamPlayers,
-}: TeamPlayers): RoundCounts {
+}: TeamPlayersParams): RoundCounts {
   const DRAFT_ROUNDS = 2;
   const roundCounts: RoundCounts = {};
   if (teamPlayers) {
