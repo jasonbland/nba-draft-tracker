@@ -1,45 +1,82 @@
-import React, { useState, useEffect } from "react";
-import { getNBATeams } from "../functions/balldontlieApi";
+import { useState, useEffect } from "react";
+import {
+  RoundCounts,
+  getNBAPlayers,
+  getNBATeams,
+  getRoundCountForSelectedTeam,
+} from "../functions/balldontlieApi";
 import { NBATeam } from "@balldontlie/sdk";
 import Form from "react-bootstrap/Form";
-import { Button, Col, Row } from "react-bootstrap";
+import { Alert, Button, Col, Row } from "react-bootstrap";
 import "./App.css";
 
 function App() {
   const [teams, setTeams] = useState<NBATeam[]>();
-  const [loading, setLoading] = useState(true);
-
-  async function init() {
-    const allTeams = await getNBATeams();
-    setTeams(allTeams);
-    setLoading(false);
-  }
+  const [loading, setLoading] = useState<boolean>(true);
+  const [selectedTeamName, setSelectedTeamName] = useState<string>("");
+  const [roundCount, setRoundCount] = useState<string>("");
+  const [errorPage, setErrorPage] = useState<boolean>(false);
 
   function SelectTeamDropdown(teams: Array<NBATeam>) {
     return (
-      <Form.Select aria-label="Default select example" className="mb-2">
+      <Form.Select
+        aria-label="Default select example"
+        className="mb-2"
+        id="teamInput"
+      >
         <option>Select Team</option>
         {teams.map((team) => (
           <option value={team.id} key={team.id} id={team.id.toString()}>
             {team.full_name}
           </option>
         ))}
-        <option value="1">One</option>
-        <option value="2">Two</option>
-        <option value="3">Three</option>
       </Form.Select>
     );
   }
 
-  function SelectDraftRoundsDropdown() {
-    return (
-      <Form.Select aria-label="Default select example" className="mb-2">
-        <option>Select Draft Rounds</option>
-        <option value="1">One</option>
-        <option value="2">Two</option>
-        <option value="3">Three</option>
-      </Form.Select>
-    );
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    const formElements = form.elements as typeof form.elements & {
+      teamInput: { value: number; innerHTML: string };
+    };
+
+    const teamId = formElements.teamInput.value;
+    const teamPlayers = await getNBAPlayers({ teamId });
+
+    let roundCounts: RoundCounts = {};
+    if (teamPlayers.length) {
+      roundCounts = getRoundCountForSelectedTeam({
+        teamPlayers,
+      });
+    } else {
+      setErrorPage(true);
+    }
+
+    if (Object.keys(roundCounts).length) {
+      setRoundCount(JSON.stringify(roundCounts));
+    }
+
+    if (teamPlayers?.length) {
+      setSelectedTeamName(teamPlayers[0].team.full_name);
+    }
+  }
+
+  async function init() {
+    const allTeams = await getNBATeams();
+
+    if (allTeams.length) {
+      console.log("got here2");
+      setTeams(allTeams);
+    } else {
+      console.log("got here");
+      setErrorPage(true);
+    }
+
+    console.log("got here3");
+
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -50,61 +87,43 @@ function App() {
 
   return (
     <>
-      <h1>NBA Draft Tracker</h1>
-      <div className="card">
-        <Form>
-          <Row className="align-items-center">
-            <Col xs="auto">
-              <Form.Label htmlFor="inlineFormInput" visuallyHidden>
-                Teams
-              </Form.Label>
-              {teams && SelectTeamDropdown(teams)}
-            </Col>
-            <Col xs="auto">
-              <Form.Label htmlFor="inlineFormInputGroup" visuallyHidden>
-                Username
-              </Form.Label>
-              {SelectDraftRoundsDropdown()}
-            </Col>
-            <Col xs="auto">
-              <Button type="submit" className="mb-2">
-                Submit
-              </Button>
-            </Col>
-          </Row>
-        </Form>
-      </div>
-      <div className="card">
-        {teams && (
-          <table>
-            <thead>
-              <tr>
-                <th scope="col">full_name</th>
-                <th scope="col">abbreviation</th>
-                <th scope="col">city</th>
-                <th scope="col">conference</th>
-                <th scope="col">division</th>
-                <th scope="col">id</th>
-                <th scope="col">name</th>
-              </tr>
-            </thead>
-            <tbody>
-              {teams.map((team) => (
-                <tr key={team.id.toString()}>
-                  <th>{team.full_name}</th>
-                  <td>{team.abbreviation}</td>
-                  <td>{team.city}</td>
-                  <td>{team.conference}</td>
-                  <td>{team.division}</td>
-                  <td>{team.id}</td>
-                  <td>{team.name}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-      <p className="read-the-docs">Click on the logos to learn more</p>
+      {!loading ? (
+        <>
+          <h1>NBA Draft Tracker</h1>
+          <div className="card">
+            {!errorPage ? (
+              <Form onSubmit={handleSubmit}>
+                <Row className="align-items-center">
+                  <Col xs="auto">
+                    <Form.Label htmlFor="inlineFormInput" visuallyHidden>
+                      Teams
+                    </Form.Label>
+                    {teams && SelectTeamDropdown(teams)}
+                  </Col>
+                  <Col xs="auto">
+                    <Button type="submit" className="mb-2">
+                      Submit
+                    </Button>
+                  </Col>
+                </Row>
+              </Form>
+            ) : (
+              <Alert variant="danger">
+                <Alert.Heading>
+                  Error: Too many attempts. Please try again after 1 minute.
+                </Alert.Heading>
+              </Alert>
+            )}
+          </div>
+          <br />
+          <div className="card content">
+            <div>Team Name: {selectedTeamName}</div>
+            <div>Draft Rounds: {roundCount}</div>
+          </div>
+        </>
+      ) : (
+        <div className="card">Loading...</div>
+      )}
     </>
   );
 }

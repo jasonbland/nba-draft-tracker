@@ -40,6 +40,10 @@
   padding: 2em;
 }
 
+.content {
+  text-align: left;
+}
+
 .read-the-docs {
   color: #888;
 }
