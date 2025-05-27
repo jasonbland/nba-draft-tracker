@@ -23,5 +23,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src/app", "test"]
+  "include": ["src/app", "src/functions", "test"]
 }
