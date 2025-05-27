@@ -23,7 +23,7 @@ export default function NBATeamsForm({
           {teams && SelectTeamDropdown(teams)}
         </Col>
         <Col xs="auto">
-          <Button type="submit" className="mb-2">
+          <Button type="submit" className="mb-2" data-testid="submitButton">
             Submit
           </Button>
         </Col>
