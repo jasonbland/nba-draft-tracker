@@ -1,6 +1,6 @@
 # NBA Draft Tracker
 
-Displays the number of players for a given team in the first two rounds.
+Displays the number of players for a given team in the first two rounds of the rounds.
 
 Hosted page can be found here: https://www.nba-draft-tracker.jasonbland.dev
 
